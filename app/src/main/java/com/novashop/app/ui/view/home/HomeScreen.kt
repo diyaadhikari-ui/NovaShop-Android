@@ -50,7 +50,7 @@ fun HomeScreenContent(
                             text = "Nova Shop",
                             fontWeight = FontWeight.Bold,
                             color = Color.White,
-                            fontSize = 18.sp
+                            fontSize = 19.sp
                         )
                         Text(
                             text = "Nepalese Wall Art",
