@@ -43,6 +43,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
 
+    implementation("com.google.firebase:firebase-storage-ktx:21.0.1")
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))
@@ -93,8 +94,25 @@ dependencies {
     // OkHttp - HTTP client
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
+
     // Gson - JSON parsing
     implementation("com.google.code.gson:gson:2.10.1")
+
+    // Unit Testing
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.mockito:mockito-core:5.11.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+
+    //Instrument testing
+    androidTestImplementation("androidx.test:runner:1.2.0")
+    androidTestImplementation("androidx.test:rules:1.2.0")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.1")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+
+
 
     // Testing
     testImplementation(libs.junit)
@@ -105,4 +123,7 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.ui.tooling)
+
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
