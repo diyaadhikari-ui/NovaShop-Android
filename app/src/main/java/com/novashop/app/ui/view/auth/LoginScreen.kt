@@ -14,9 +14,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.tooling.preview.Preview
 import com.novashop.app.viewmodel.AuthState
 import com.novashop.app.viewmodel.AuthViewModel
 
@@ -37,10 +37,12 @@ fun LoginScreenContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF2A1F14)),
+            .background(Color(0xFF2A1F14))
+            .padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+
         // Logo area
         Text(
             text = "Nova Shop",
@@ -48,19 +50,18 @@ fun LoginScreenContent(
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold
         )
+
         Text(
             text = "Nepalese Wall Art",
             color = Color(0xFFE07B39),
             fontSize = 14.sp
         )
 
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(44.dp))
 
         // Form card
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp),
+            modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
                 containerColor = Color.White
@@ -70,6 +71,7 @@ fun LoginScreenContent(
                 modifier = Modifier.padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+
                 Text(
                     text = "Welcome Back",
                     fontSize = 22.sp,
@@ -82,6 +84,14 @@ fun LoginScreenContent(
                 Text(
                     text = "Sign in to your account",
                     fontSize = 14.sp,
+                    color = Color.Gray
+                )
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                Text(
+                    text = "Continue shopping your favorite handmade art",
+                    fontSize = 12.sp,
                     color = Color.Gray
                 )
 
@@ -173,6 +183,7 @@ fun LoginScreenContent(
                         color = Color.Gray,
                         fontSize = 14.sp
                     )
+
                     Text(
                         text = "Register",
                         color = Color(0xFFE07B39),
@@ -213,9 +224,11 @@ fun LoginScreen(
                 }
                 authViewModel.resetState()
             }
+
             is AuthState.Error -> {
                 errorMessage = state.message
             }
+
             else -> {}
         }
     }
@@ -237,20 +250,19 @@ fun LoginScreen(
     )
 }
 
-// Preview - now it works!
 @Preview(showBackground = true, widthDp = 412, heightDp = 915)
 @Composable
 fun LoginScreenPreview() {
     LoginScreenContent(
         email = "user@example.com",
-        onEmailChange = { },
+        onEmailChange = {},
         password = "password123",
-        onPasswordChange = { },
+        onPasswordChange = {},
         passwordVisible = false,
-        onPasswordVisibilityToggle = { },
+        onPasswordVisibilityToggle = {},
         errorMessage = "",
         isLoading = false,
-        onLogin = { },
-        onNavigateToRegister = { }
+        onLogin = {},
+        onNavigateToRegister = {}
     )
 }
