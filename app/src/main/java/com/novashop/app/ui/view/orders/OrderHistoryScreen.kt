@@ -201,7 +201,7 @@ fun OrderCard(order: Order) {
             ) {
                 Text(
                     text = "Total paid",
-                    fontSize = 13.sp,
+                    fontSize = 14.sp,
                     color = Color.Gray
                 )
                 Text(
