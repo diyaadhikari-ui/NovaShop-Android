@@ -4,7 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,25 +30,30 @@ fun OrderSuccessScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(24.dp),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
+            shape = RoundedCornerShape(18.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White
+            )
         ) {
             Column(
                 modifier = Modifier.padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Success icon
+
                 Surface(
                     shape = RoundedCornerShape(50),
                     color = Color(0xFFEAF3DE),
-                    modifier = Modifier.size(80.dp)
+                    modifier = Modifier.size(84.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Text(text = "✅", fontSize = 36.sp)
+                        Text(
+                            text = "✅",
+                            fontSize = 36.sp
+                        )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(18.dp))
 
                 Text(
                     text = "Order Confirmed!",
@@ -67,7 +72,7 @@ fun OrderSuccessScreen(
                     lineHeight = 22.sp
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 Surface(
                     shape = RoundedCornerShape(20.dp),
@@ -84,13 +89,22 @@ fun OrderSuccessScreen(
                     )
                 }
 
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(
+                    text = "You can track your order anytime from My Orders.",
+                    fontSize = 12.sp,
+                    color = Color.Gray,
+                    textAlign = TextAlign.Center
+                )
+
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Button(
                     onClick = onNavigateToOrders,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(48.dp),
+                        .height(50.dp),
                     shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF2A1F14)
@@ -108,7 +122,7 @@ fun OrderSuccessScreen(
                     onClick = onNavigateToHome,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(48.dp),
+                        .height(50.dp),
                     shape = RoundedCornerShape(10.dp)
                 ) {
                     Text(
@@ -122,12 +136,11 @@ fun OrderSuccessScreen(
     }
 }
 
-// Preview
 @Preview(showBackground = true, widthDp = 412, heightDp = 915)
 @Composable
 fun OrderSuccessScreenPreview() {
     OrderSuccessScreen(
-        onNavigateToHome = { },
-        onNavigateToOrders = { }
+        onNavigateToHome = {},
+        onNavigateToOrders = {}
     )
 }
