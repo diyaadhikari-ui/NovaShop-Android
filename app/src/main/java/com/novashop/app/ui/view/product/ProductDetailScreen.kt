@@ -174,7 +174,7 @@ fun ProductDetailScreenContent(
                     // Title
                     Text(
                         text = art.title,
-                        fontSize = 24.sp,
+                        fontSize = 25.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF2A1F14)
                     )
