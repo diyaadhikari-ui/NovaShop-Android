@@ -362,7 +362,7 @@ fun ArtworkFormDialog(
                         Text(
                             text = errorMessage,
                             color = Color.Red,
-                            fontSize = 13.sp
+                            fontSize = 14.sp
                         )
                     }
                 }
