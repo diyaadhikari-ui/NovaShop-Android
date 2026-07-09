@@ -24,7 +24,8 @@ fun SplashScreenUI() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF2A1F14)),
+            .background(Color(0xFF2A1F14))
+            .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -32,16 +33,17 @@ fun SplashScreenUI() {
             imageVector = Icons.Filled.ShoppingCart,
             contentDescription = "Nova Shop Logo",
             tint = Color(0xFFE07B39),
-            modifier = Modifier.size(100.dp)
+            modifier = Modifier.size(104.dp)
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(18.dp))
 
         Text(
             text = "Nova Shop",
             color = Color.White,
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold
+            fontSize = 34.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -50,6 +52,16 @@ fun SplashScreenUI() {
             text = "Nepalese Wall Art",
             color = Color(0xFFE07B39),
             fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        Text(
+            text = "Discover handmade art for your space",
+            color = Color.White.copy(alpha = 0.75f),
+            fontSize = 13.sp,
             textAlign = TextAlign.Center
         )
     }
