@@ -249,7 +249,7 @@ fun ProductCard(
                             fontSize = 10.sp,
                             modifier = Modifier.padding(
                                 horizontal = 8.dp,
-                                vertical = 3.dp
+                                vertical = 4.dp
                             )
                         )
                     }
