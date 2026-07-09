@@ -102,7 +102,7 @@ fun CheckoutScreenContent(
                                 Text(
                                     text = "1",
                                     color = Color.White,
-                                    fontSize = 12.sp
+                                    fontSize = 13.sp
                                 )
                             }
                         }
