@@ -99,7 +99,7 @@ fun CartScreenContent(
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFF2A1F14)
                         ),
-                        shape = RoundedCornerShape(10.dp)
+                        shape = RoundedCornerShape(11.dp)
                     ) {
                         Text(text = "Browse Artworks")
                     }
