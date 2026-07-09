@@ -1,5 +1,6 @@
 package com.novashop.app.ui.view.admin
 
+import android.content.Context
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,15 +21,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.google.firebase.storage.FirebaseStorage
 import coil.compose.AsyncImage
 import com.novashop.app.data.model.Artwork
 import com.novashop.app.viewmodel.ArtworkViewModel
-import java.util.UUID
+import kotlinx.coroutines.launch
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import org.json.JSONObject
+import java.io.IOException
+
+private const val CLOUDINARY_CLOUD_NAME = "dchgtj63r"
+private const val CLOUDINARY_UPLOAD_PRESET = "Nova-Sop"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -211,6 +219,9 @@ fun ArtworkFormDialog(
     onDismiss: () -> Unit,
     onSave: (Artwork) -> Unit
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
     var title by remember { mutableStateOf(artwork?.title ?: "") }
     var description by remember { mutableStateOf(artwork?.description ?: "") }
     var price by remember { mutableStateOf(artwork?.basePrice?.toString() ?: "") }
@@ -320,7 +331,7 @@ fun ArtworkFormDialog(
                 }
 
                 item {
-                    val previewImage = selectedImageUri ?: imageUrl
+                    val previewImage: Any? = selectedImageUri ?: imageUrl
 
                     if (previewImage.toString().isNotEmpty()) {
                         AsyncImage(
@@ -337,9 +348,7 @@ fun ArtworkFormDialog(
 
                 if (isUploading) {
                     item {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(22.dp),
                                 color = Color(0xFFE07B39),
@@ -403,49 +412,37 @@ fun ArtworkFormDialog(
                                 isUploading = true
                                 errorMessage = ""
 
-                                if (selectedImageUri != null) {
-                                    uploadArtworkImageToFirebase(
-                                        imageUri = selectedImageUri!!,
-                                        onSuccess = { uploadedUrl ->
-                                            isUploading = false
-
-                                            val newArtwork = Artwork(
-                                                id = artwork?.id ?: "",
-                                                title = title,
-                                                description = description,
-                                                categoryName = category,
-                                                basePrice = price.toDoubleOrNull() ?: 0.0,
-                                                imageUrl = uploadedUrl,
-                                                isFeatured = artwork?.isFeatured ?: false,
-                                                isLimitedEdition = artwork?.isLimitedEdition ?: false,
-                                                artistBio = artwork?.artistBio ?: "",
-                                                tags = artwork?.tags ?: emptyList()
+                                scope.launch {
+                                    try {
+                                        val finalImageUrl = if (selectedImageUri != null) {
+                                            uploadArtworkImageToCloudinary(
+                                                context = context,
+                                                imageUri = selectedImageUri!!
                                             )
-
-                                            onSave(newArtwork)
-                                        },
-                                        onFailure = { error ->
-                                            isUploading = false
-                                            errorMessage = error
+                                        } else {
+                                            imageUrl
                                         }
-                                    )
-                                } else {
-                                    isUploading = false
 
-                                    val updatedArtwork = Artwork(
-                                        id = artwork?.id ?: "",
-                                        title = title,
-                                        description = description,
-                                        categoryName = category,
-                                        basePrice = price.toDoubleOrNull() ?: 0.0,
-                                        imageUrl = imageUrl,
-                                        isFeatured = artwork?.isFeatured ?: false,
-                                        isLimitedEdition = artwork?.isLimitedEdition ?: false,
-                                        artistBio = artwork?.artistBio ?: "",
-                                        tags = artwork?.tags ?: emptyList()
-                                    )
+                                        val finalArtwork = Artwork(
+                                            id = artwork?.id ?: "",
+                                            title = title,
+                                            description = description,
+                                            categoryName = category,
+                                            basePrice = price.toDoubleOrNull() ?: 0.0,
+                                            imageUrl = finalImageUrl,
+                                            isFeatured = artwork?.isFeatured ?: false,
+                                            isLimitedEdition = artwork?.isLimitedEdition ?: false,
+                                            artistBio = artwork?.artistBio ?: "",
+                                            tags = artwork?.tags ?: emptyList()
+                                        )
 
-                                    onSave(updatedArtwork)
+                                        isUploading = false
+                                        onSave(finalArtwork)
+
+                                    } catch (e: Exception) {
+                                        isUploading = false
+                                        errorMessage = e.message ?: "Image upload failed"
+                                    }
                                 }
                             },
                             modifier = Modifier.weight(1f),
@@ -464,26 +461,75 @@ fun ArtworkFormDialog(
     }
 }
 
-fun uploadArtworkImageToFirebase(
-    imageUri: Uri,
-    onSuccess: (String) -> Unit,
-    onFailure: (String) -> Unit
-) {
-    val storageRef = FirebaseStorage.getInstance().reference
-    val imageName = "artworks/${UUID.randomUUID()}.jpg"
-    val imageRef = storageRef.child(imageName)
+suspend fun uploadArtworkImageToCloudinary(
+    context: Context,
+    imageUri: Uri
+): String {
+    return kotlinx.coroutines.suspendCancellableCoroutine { continuation ->
 
-    imageRef.putFile(imageUri)
-        .addOnSuccessListener {
-            imageRef.downloadUrl
-                .addOnSuccessListener { downloadUri ->
-                    onSuccess(downloadUri.toString())
-                }
-                .addOnFailureListener { exception ->
-                    onFailure(exception.message ?: "Failed to get image URL")
-                }
+        val inputStream = context.contentResolver.openInputStream(imageUri)
+        val imageBytes = inputStream?.readBytes()
+        inputStream?.close()
+
+        if (imageBytes == null) {
+            continuation.resumeWith(Result.failure(Exception("Unable to read selected image")))
+            return@suspendCancellableCoroutine
         }
-        .addOnFailureListener { exception ->
-            onFailure(exception.message ?: "Image upload failed")
-        }
+
+        val requestBody = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart(
+                "file",
+                "artwork_${System.currentTimeMillis()}.jpg",
+                RequestBody.create(
+                    "image/*".toMediaTypeOrNull(),
+                    imageBytes
+                )
+            )
+            .addFormDataPart("upload_preset", CLOUDINARY_UPLOAD_PRESET)
+            .build()
+
+        val request = Request.Builder()
+            .url("https://api.cloudinary.com/v1_1/$CLOUDINARY_CLOUD_NAME/image/upload")
+            .post(requestBody)
+            .build()
+
+        val client = OkHttpClient()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                if (continuation.isActive) {
+                    continuation.resumeWith(Result.failure(e))
+                }
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                response.use {
+                    val responseBody = it.body?.string()
+
+                    if (!it.isSuccessful || responseBody == null) {
+                        if (continuation.isActive) {
+                            continuation.resumeWith(
+                                Result.failure(Exception("Cloudinary upload failed"))
+                            )
+                        }
+                        return
+                    }
+
+                    try {
+                        val jsonObject = JSONObject(responseBody)
+                        val secureUrl = jsonObject.getString("secure_url")
+
+                        if (continuation.isActive) {
+                            continuation.resumeWith(Result.success(secureUrl))
+                        }
+                    } catch (e: Exception) {
+                        if (continuation.isActive) {
+                            continuation.resumeWith(Result.failure(e))
+                        }
+                    }
+                }
+            }
+        })
+    }
 }
