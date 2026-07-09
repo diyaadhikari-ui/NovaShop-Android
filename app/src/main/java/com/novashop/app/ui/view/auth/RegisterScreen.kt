@@ -20,7 +20,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.novashop.app.viewmodel.AuthState
 import com.novashop.app.viewmodel.AuthViewModel
 
-// UI-only composable (for preview)
 @Composable
 fun RegisterScreenContent(
     fullName: String,
@@ -41,7 +40,8 @@ fun RegisterScreenContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF2A1F14)),
+            .background(Color(0xFF2A1F14))
+            .padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -51,19 +51,18 @@ fun RegisterScreenContent(
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold
         )
+
         Text(
             text = "Create your account",
             color = Color(0xFFE07B39),
             fontSize = 14.sp
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(40.dp))
 
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp),
-            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(18.dp),
             colors = CardDefaults.cardColors(
                 containerColor = Color.White
             )
@@ -84,6 +83,14 @@ fun RegisterScreenContent(
                 Text(
                     text = "Start your art collection today",
                     fontSize = 14.sp,
+                    color = Color.Gray
+                )
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                Text(
+                    text = "Register to explore unique handmade artworks.",
+                    fontSize = 12.sp,
                     color = Color.Gray
                 )
 
@@ -166,7 +173,7 @@ fun RegisterScreenContent(
                     onClick = onRegister,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(50.dp),
+                        .height(52.dp),
                     shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF2A1F14)
@@ -195,6 +202,7 @@ fun RegisterScreenContent(
                         color = Color.Gray,
                         fontSize = 14.sp
                     )
+
                     Text(
                         text = "Sign In",
                         color = Color(0xFFE07B39),
@@ -210,7 +218,6 @@ fun RegisterScreenContent(
     }
 }
 
-// Main composable with ViewModel logic
 @Composable
 fun RegisterScreen(
     authViewModel: AuthViewModel,
@@ -232,9 +239,11 @@ fun RegisterScreen(
                 onNavigateToHome()
                 authViewModel.resetState()
             }
+
             is AuthState.Error -> {
                 errorMessage = state.message
             }
+
             else -> {}
         }
     }
@@ -254,42 +263,45 @@ fun RegisterScreen(
         isLoading = authState is AuthState.Loading,
         onRegister = {
             errorMessage = ""
+
             if (fullName.isEmpty() || email.isEmpty() || password.isEmpty()) {
                 errorMessage = "All fields are required"
                 return@RegisterScreenContent
             }
+
             if (password != confirmPassword) {
                 errorMessage = "Passwords do not match"
                 return@RegisterScreenContent
             }
+
             if (password.length < 8) {
                 errorMessage = "Password must be at least 8 characters"
                 return@RegisterScreenContent
             }
+
             authViewModel.register(fullName, email, password)
         },
         onNavigateToLogin = onNavigateToLogin
     )
 }
 
-// Preview - now it works!
 @Preview(showBackground = true, widthDp = 412, heightDp = 915)
 @Composable
 fun RegisterScreenPreview() {
     RegisterScreenContent(
         fullName = "John Doe",
-        onFullNameChange = { },
+        onFullNameChange = {},
         email = "john@example.com",
-        onEmailChange = { },
+        onEmailChange = {},
         password = "password123",
-        onPasswordChange = { },
+        onPasswordChange = {},
         confirmPassword = "password123",
-        onConfirmPasswordChange = { },
+        onConfirmPasswordChange = {},
         passwordVisible = false,
-        onPasswordVisibilityToggle = { },
+        onPasswordVisibilityToggle = {},
         errorMessage = "",
         isLoading = false,
-        onRegister = { },
-        onNavigateToLogin = { }
+        onRegister = {},
+        onNavigateToLogin = {}
     )
 }
